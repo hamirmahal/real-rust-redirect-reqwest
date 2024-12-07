@@ -1,6 +1,28 @@
 name: cargo
 on: [push]
 jobs:
+  build-finishes-quickly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo build
+        timeout-minutes: 1
+
+      - name: Make sure rebuilds finish quickly.
+        run: |
+          start_time=$(date +%s)
+
+          echo "fn _f() { print!(\"Subsequent builds should be quick.\"); }" >> src/main.rs
+          cargo build
+
+          end_time=$(date +%s)
+          maximum_seconds_to_rebuild=6
+          seconds_elapsed=$((end_time - start_time))
+          if [ "$seconds_elapsed" -gt "$maximum_seconds_to_rebuild" ]; then
+            echo "Build took too long: $seconds_elapsed s"
+            exit 1
+          fi
+
   clippy:
     runs-on: ubuntu-latest
     steps:
