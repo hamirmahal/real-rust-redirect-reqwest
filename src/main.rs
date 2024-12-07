@@ -37,7 +37,7 @@ struct ProxyPayload<'a> {
 #[post("/")]
 /// You can test this endpoint locally with the following command:
 /// ```sh
-/// curl -v 127.0.0.1:8080 \
+/// curl -v 0.0.0.0:8080 \
 ///   -H "Content-Type: application/json" \
 ///   -d '{"client_id":"example_client_id","events":[{"name":"test","params":{"test":"test"}}]}'
 /// ```
@@ -71,7 +71,7 @@ async fn proxy_handler(request: web::Json<AnalyticsRequest>) -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| App::new().service(proxy_handler))
-        .bind("127.0.0.1:8080")?
+        .bind("0.0.0.0:8080")?
         .run()
         .await
 }
